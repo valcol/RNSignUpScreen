@@ -84,7 +84,12 @@ export const ErrorCardContent = styled(Body)`
     justify-content: flex-start;
     flex-direction: row;
 `;
+
 export const ErrorCardIcon = styled(Icon)`
     color: white;
     margin-right: 15px;
+`;
+
+export const SubmitPhoneNumberIcon = styled(Icon)`
+    color: white;
 `;
