@@ -28,8 +28,9 @@ import {
     SubmitPhoneNumberIcon
 } from "./styles";
 import R from "ramda";
+import withSignUp from "../../store/signup/hoc";
 
-const SignUp = () => {
+const SignUp = props => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [SMSCode, setSMSCode] = useState(["", "", "", ""]);
     const digitInputRefs = [useRef(), useRef(), useRef(), useRef()];
@@ -149,4 +150,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default withSignUp(SignUp);

@@ -1,0 +1,2 @@
+export const REQUEST_SMS_CODE = "REQUEST_SMS_CODE";
+export const VERIFY_SMS_CODE = "VERIFY_SMS_CODE";
