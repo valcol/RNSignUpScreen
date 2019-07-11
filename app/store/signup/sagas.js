@@ -7,7 +7,7 @@ export default function* signUpSaga() {
         driver: createMockDriver({
             [REQUEST_SMS_CODE]: requestConfig => {
                 const phoneNumber = requestConfig.url.split("/")[3];
-                if (phoneNumber === "060000000000") return { status: 200 };
+                if (phoneNumber === "0600000000") return { status: 200 };
 
                 throw { status: 404 };
             },
