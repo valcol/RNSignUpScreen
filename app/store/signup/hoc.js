@@ -10,12 +10,16 @@ import {
 } from "./selectors";
 
 const mapStateToProps = state => {
-    const isCodeRequestPending = selectCodeRequestPending(state);
-    const isCodeRequestOnError = selectCodeRequestError(state);
-    const isCodeRequestOnSuccess = selectCodeRequestData(state);
-    const isCodeVerificationPending = selectCodeVerificationPending(state);
-    const isCodeVerificationOnError = selectCodeVerificationError(state);
-    const isCodeVerificationOnSuccess = selectCodeVerificationData(state);
+    const isCodeRequestPending = selectCodeRequestPending(state) > 0;
+    const isCodeRequestOnError = Boolean(selectCodeRequestError(state));
+    const isCodeRequestOnSuccess = Boolean(selectCodeRequestData(state));
+    const isCodeVerificationPending = selectCodeVerificationPending(state) > 0;
+    const isCodeVerificationOnError = Boolean(
+        selectCodeVerificationError(state)
+    );
+    const isCodeVerificationOnSuccess = Boolean(
+        selectCodeVerificationData(state)
+    );
     return {
         isCodeRequestPending,
         isCodeRequestOnError,
