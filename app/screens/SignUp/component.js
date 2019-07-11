@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { func, bool } from "prop-types";
 import {
     Body,
     Button,
@@ -203,6 +204,28 @@ const SignUp = ({
             </KeyboardAwareWrapper>
         </Container>
     );
+};
+
+SignUp.propsTypes = {
+    isCodeRequestPending: bool,
+    isCodeRequestOnError: bool,
+    isCodeRequestOnSuccess: bool,
+    isCodeVerificationPending: bool,
+    isCodeVerificationOnError: bool,
+    isCodeVerificationOnSuccess: bool,
+    requestSMSCode: func,
+    requestSMSCode: func
+};
+
+SignUp.defaultProps = {
+    isCodeRequestPending: false,
+    isCodeRequestOnError: false,
+    isCodeRequestOnSuccess: false,
+    isCodeVerificationPending: false,
+    isCodeVerificationOnError: false,
+    isCodeVerificationOnSuccess: false,
+    requestSMSCode: Function.prototype,
+    requestSMSCode: Function.prototype
 };
 
 export default withSignUp(SignUp);
