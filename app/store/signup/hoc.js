@@ -1,9 +1,28 @@
 import { connect } from "react-redux";
 import { requestSMSCode, verifySMSCode } from "./actions";
+import {
+    selectCodeRequestData,
+    selectCodeRequestError,
+    selectCodeRequestPending,
+    selectCodeVerificationData,
+    selectCodeVerificationError,
+    selectCodeVerificationPending
+} from "./selectors";
 
 const mapStateToProps = state => {
+    const isCodeRequestPending = selectCodeRequestPending(state);
+    const isCodeRequestOnError = selectCodeRequestError(state);
+    const isCodeRequestOnSuccess = selectCodeRequestData(state);
+    const isCodeVerificationPending = selectCodeVerificationPending(state);
+    const isCodeVerificationOnError = selectCodeVerificationError(state);
+    const isCodeVerificationOnSuccess = selectCodeVerificationData(state);
     return {
-        state
+        isCodeRequestPending,
+        isCodeRequestOnError,
+        isCodeRequestOnSuccess,
+        isCodeVerificationPending,
+        isCodeVerificationOnError,
+        isCodeVerificationOnSuccess
     };
 };
 
