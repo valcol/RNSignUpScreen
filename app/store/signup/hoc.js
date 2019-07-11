@@ -37,10 +37,10 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-const HOC = Component =>
+const withSignUp = Component =>
     connect(
         mapStateToProps,
         mapDispatchToProps
     )(Component);
 
-export default HOC;
+export default withSignUp;
