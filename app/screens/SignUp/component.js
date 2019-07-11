@@ -32,7 +32,7 @@ import {
 import R from "ramda";
 import withSignUp from "../../store/signup/hoc";
 
-const SignUp = ({
+export const SignUp = ({
     isCodeRequestPending,
     isCodeRequestOnError,
     isCodeRequestOnSuccess,
