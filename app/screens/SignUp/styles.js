@@ -24,7 +24,7 @@ export const ThemedHeader = styled(Header)`
 export const DigitInputItem = styled(Item)`
     width: 50px;
     border-radius: 5px;
-    margin: 10px;
+    margin: 0 10px 0 10px;
 `;
 
 export const DigitInput = styled(Input)`
@@ -46,7 +46,7 @@ export const WhiteLabel = styled(Label)`
 
 export const SMSCodeContainer = styled.View`
     flex: 1;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     flex-direction: row;
 `;

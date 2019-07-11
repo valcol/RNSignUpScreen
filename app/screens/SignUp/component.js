@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Body,
     Button,
@@ -7,7 +7,8 @@ import {
     Form,
     Icon,
     Left,
-    Title
+    Title,
+    Toast
 } from "native-base";
 import {
     ButtonsWrapper,
@@ -30,15 +31,43 @@ import {
 import R from "ramda";
 import withSignUp from "../../store/signup/hoc";
 
-const SignUp = props => {
+const SignUp = ({
+    isCodeRequestPending,
+    isCodeRequestOnError,
+    isCodeRequestOnSuccess,
+    isCodeVerificationPending,
+    isCodeVerificationOnError,
+    isCodeVerificationOnSuccess,
+    requestSMSCode,
+    verifySMSCode
+}) => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [SMSCode, setSMSCode] = useState(["", "", "", ""]);
+    const [isPhoneNumberInvalid, setIsPhoneNumberInvalid] = useState(
+        isCodeRequestOnError
+    );
+    const [isSMSCodeInvalid, setIsSMSCodeInvalid] = useState(
+        isCodeVerificationOnError
+    );
     const digitInputRefs = [useRef(), useRef(), useRef(), useRef()];
+    useEffect(() => setIsPhoneNumberInvalid(isCodeRequestOnError), [
+        isCodeRequestOnError
+    ]);
+    useEffect(() => setIsSMSCodeInvalid(isCodeVerificationOnError), [
+        isCodeVerificationOnError
+    ]);
+    useEffect(() => {
+        if (!isCodeVerificationOnSuccess) return;
+        Toast.show({
+            text: "Success!",
+            buttonText: "Okay",
+            type: "success"
+        });
+    }, [isCodeVerificationOnSuccess]);
 
     const setSMSCodeDigit = (index, digit) =>
         setSMSCode(R.set(R.lensIndex(index), digit, SMSCode));
 
-    //Due to time constraints the client side data validation isn't great.
     const isPhoneNumberFilled = phoneNumber.length == 10;
 
     const isSMSCodeFilled = !SMSCode.includes("");
@@ -47,17 +76,18 @@ const SignUp = props => {
         const nextInputIndex = currentInputIndex + 1;
         if (nextInputIndex > SMSCode.length) return;
 
-        const nextInputValue = R.pathOr(null, [nextInputIndex], SMSCode);
-        if (nextInputValue) return;
-
         const nextInputRef = R.pathOr(null, [nextInputIndex], digitInputRefs);
         if (!nextInputRef) return;
 
         nextInputRef.current._root.focus();
     };
 
+    const submitCode = () => verifySMSCode(SMSCode.join(""));
+
+    const submitPhoneNumber = () => requestSMSCode(phoneNumber);
+
     const renderSMSCodeDigitField = index => (
-        <DigitInputItem regular>
+        <DigitInputItem regular error={isSMSCodeInvalid}>
             <DigitInput
                 blurOnSubmit={false}
                 keyboardType={"phone-pad"}
@@ -65,6 +95,7 @@ const SignUp = props => {
                 onChangeText={digit => {
                     setSMSCodeDigit(index, digit);
                     focusNextInput(index);
+                    setIsSMSCodeInvalid(false);
                 }}
                 onFocus={() => setSMSCodeDigit(index, "")}
                 value={SMSCode[index]}
@@ -75,10 +106,28 @@ const SignUp = props => {
 
     const renderSubmitPhoneNumberButton = () => {
         if (!isPhoneNumberFilled) return null;
+
         return (
-            <Button transparent>
+            <Button transparent onPress={submitPhoneNumber}>
                 <SubmitPhoneNumberIcon name="send" />
             </Button>
+        );
+    };
+
+    const renderSMSCodeForm = () => {
+        if (!isCodeRequestOnSuccess) return null;
+
+        return (
+            <FormItem>
+                <WhiteLabel>Code de confirmation reçu par SMS</WhiteLabel>
+                <SMSCodeContainer>
+                    {renderSMSCodeDigitField(0)}
+                    {renderSMSCodeDigitField(1)}
+                    {renderSMSCodeDigitField(2)}
+                    {renderSMSCodeDigitField(3)}
+                </SMSCodeContainer>
+                {isSMSCodeInvalid && renderError("Code incorrect.")}
+            </FormItem>
         );
     };
 
@@ -92,6 +141,16 @@ const SignUp = props => {
             </ErrorCardItem>
         </Card>
     );
+
+    const renderResendButton = () => {
+        if (!isCodeRequestOnSuccess) return null;
+
+        return (
+            <CustomButton rounded bordered onPress={submitPhoneNumber}>
+                <WhiteLabel>Renvoyer le SMS</WhiteLabel>
+            </CustomButton>
+        );
+    };
 
     return (
         <Container>
@@ -110,37 +169,33 @@ const SignUp = props => {
                     <Form>
                         <FormItem>
                             <WhiteLabel>Numéro de téléphone</WhiteLabel>
-                            <PhoneInputItem regular>
+                            <PhoneInputItem
+                                regular
+                                error={isPhoneNumberInvalid}
+                            >
                                 <PhoneInput
-                                    onChangeText={number =>
-                                        setPhoneNumber(number)
-                                    }
+                                    onChangeText={number => {
+                                        setPhoneNumber(number);
+                                        setIsPhoneNumberInvalid(false);
+                                    }}
                                     value={phoneNumber}
                                     keyboardType={"phone-pad"}
                                     maxLength={10}
                                 />
                                 {renderSubmitPhoneNumberButton()}
                             </PhoneInputItem>
-                            {renderError("Numéro incorrect.")}
+                            {isPhoneNumberInvalid &&
+                                renderError("Numéro incorrect.")}
                         </FormItem>
-                        <FormItem>
-                            <WhiteLabel>
-                                Code de confirmation reçu par SMS
-                            </WhiteLabel>
-                            <SMSCodeContainer>
-                                {renderSMSCodeDigitField(0)}
-                                {renderSMSCodeDigitField(1)}
-                                {renderSMSCodeDigitField(2)}
-                                {renderSMSCodeDigitField(3)}
-                            </SMSCodeContainer>
-                            {renderError("Code incorrect.")}
-                        </FormItem>
+                        {renderSMSCodeForm()}
                     </Form>
                     <ButtonsWrapper>
-                        <CustomButton rounded bordered>
-                            <WhiteLabel>Renvoyer le SMS</WhiteLabel>
-                        </CustomButton>
-                        <CustomButton rounded disabled={!isSMSCodeFilled}>
+                        {renderResendButton()}
+                        <CustomButton
+                            rounded
+                            disabled={!isSMSCodeFilled}
+                            onPress={submitCode}
+                        >
                             <WhiteLabel>Suivant</WhiteLabel>
                         </CustomButton>
                     </ButtonsWrapper>
